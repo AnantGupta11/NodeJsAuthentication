@@ -65,7 +65,8 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// app.use(passport.setAuthenticatedUser);
+//setup the current user usages
+app.use(passport.setAuthenticatedUser);
 
 app.use(flash());
 

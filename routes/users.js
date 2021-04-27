@@ -7,7 +7,7 @@ const usersController=require('../controllers/userController');
 
 router.get('/signin',usersController.signIn);
 router.get('/signup',usersController.signUp);
-// router.get('/profile/:id',usersController.profile);
+router.get('/profile/:id',passport.checkAuthentication,usersController.profile);
 
 //router for delete session
 router.get('/delete-session',usersController.deleteSession);

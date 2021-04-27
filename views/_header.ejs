@@ -1,4 +1,25 @@
 <link rel="stylesheet" href="/css/header.css">
 <header id="page-header">
-    Page Header
+    <div id="header-1">
+        <a href="/">
+            <h1>Authentication</h1>
+        </a>
+    </div>
+    <ul id="header-2">
+        <% if(locals.user){ %>
+            <li>
+                <a href="/users/profile/<%= user.id %>"><%= user.name %></a>
+            </li>
+            <li>
+                <a href="/users/delete-session">Sign Out</a>
+            </li>
+        <% }else{ %>
+            <li>
+                <a href="/users/signin">Sign In</a>
+            </li>
+            <li>
+                <a href="/users/signup">Sign Up</a>
+            </li>
+        <% } %>
+    </ul>
 </header>

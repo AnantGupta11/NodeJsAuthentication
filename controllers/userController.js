@@ -5,6 +5,9 @@ const bcrypt =require('bcrypt');
 
 //controller for sign In
 module.exports.signIn=function(req,res){
+    if(req.isAuthenticated()){
+        res.redirect('/users/profile');
+    }
     return res.render('_userSignIn',{
         title:'Sign In'
     })
@@ -12,6 +15,9 @@ module.exports.signIn=function(req,res){
 
 //controller for sign Up
 module.exports.signUp=function(req,res){
+    if(req.isAuthenticated()){
+        res.redirect('/users/profile');
+    }
     return res.render('_userSignUp',{
         title:'Sign Up'
     })
@@ -45,77 +51,32 @@ module.exports.create= async function(req,res){
         }
 }
 
-//sign in create session 
-// module.exports.createSession=async function(req,res){
-//     //find the user
-//     try{
-//         let user=await User.findOne({email:req.body.email});
-//         //handle user find
-//         if(user){
-//             //handle password match  
-//             const userLogin= await bcrypt.compare(req.body.password, user.password);    
-            
-//             //handle session creation for login user
-//             if(userLogin){
-//                 res.cookie('user_id',user.id);
-//                 req.flash('success', 'Logged In SuccessFully');
-//                 return res.redirect('/users/profile');
-//             }else{
-//                 req.flash('success', 'Invalid Username Or Password');
-//                 return res.redirect('back');           
-//             }
-
-//         }else{
-//             //handle user not found
-//             return res.redirect('back');
-//         }
-//     }catch(err){
-//         console.log('Error',err);
-//     }
     
-            
-// }
 //sign in create session
 module.exports.createSession= function(req,res){
+    req.flash('success', 'Logged In SuccessFully');
     return res.redirect('/');
 }
 
-// module.exports.profile=function(req,res){
-//     //if user is logged in
-//     // if(req.cookies.user_id){
-//         User.findById(req.params.id, function(err,user){
-//             // if(err){
-//             //     console.log('Error in finding user profile');
-//             //     return;
-//             // }
-            
-//                 res.render('profile',{
-//                     title:'Profile Page',
-//                     // user:user
-//                 })
-            
-//         })
-//     // else{
-//     //     //if user is not loggend in
-//     //        return res.redirect('/users/signin');
-//     // }
+//render the profile page
+module.exports.profile=function(req,res){
     
-// }
+    User.findById(req.params.id, function(err,user){
+                
+        res.render('profile',{
+            title:user.name,
+            user:user
+        })
+        
+    })
+    
+    
+}
 
 //delete Session
 module.exports.deleteSession=function(req,res){
-     res.clearCookie('user_id');
-     req.flash('success', 'Logged out SuccessFully');
-     return res.redirect('/users/signin');
+    req.logout();
+    req.flash('success', 'Logged out SuccessFully');
+    return res.redirect('/');
 }
 
-//update password
-// module.exports.updatePassword= async function(req,res){
-//     let user=await User.findByIdAndUpdate(req.params.id,{
-//         password:req.body.confirmpassword
-//     })
-
-//     //  user.save();
-//      req.flash('success', 'Password Reset');
-//     res.redirect('back');
-// }   
