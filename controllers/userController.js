@@ -80,3 +80,17 @@ module.exports.deleteSession=function(req,res){
     return res.redirect('/');
 }
 
+//update password
+module.exports.updatePassword=async function(req,res){
+    try{
+        if(req.user.id==req.params.id){
+            let user=await User.findById(req.params.id);
+            user.password=req.body.password;
+            await user.save();
+        }
+    }catch(err){
+        console.log('Error',err);
+        return res.redirect('back');
+    }
+    
+}
