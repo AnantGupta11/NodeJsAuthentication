@@ -3,16 +3,20 @@ const express=require('express');
 // install cookie parser and require it 
 const cookieParser=require('cookie-parser');
 const app=express();
-// const router=require('express-router')();
-
-const port=8000;
+const port=3000;
 const db= require('./config/mongoose');
+
+const session=require('express-session');
+const flash=require('connect-flash');
+const customMware= require('./config/middleware');
 
 // reading through the post request
 app.use(express.urlencoded());
 
+
 //setting up cookieParser
 app.use(cookieParser());
+
 
 //import expressLayout
 const expressLayouts=require('express-ejs-layouts');
@@ -30,6 +34,14 @@ app.set('layout extractScripts',true);
 //setting up view engine and path
 app.set('view engine','ejs');
 app.set('views','./views');
+
+
+
+app.use(session({secret:'ssssshhhhhh'}));
+
+app.use(flash());
+
+app.use(customMware.setFlash);
 
 //use express router
 app.use('/', require('./routes'));

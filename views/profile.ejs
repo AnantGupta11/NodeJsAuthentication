@@ -1,0 +1,10 @@
+<a href="/users/delete-session">Sign Out</a>
+<h1>Hi &nbsp;<%= user.name %></h1>
+<!-- if the user logged in  -->
+<% if(locals.user){ %>
+    <form action="/users/update/<%= user.id %>" method="POST">
+        <input type="password" name="confirmpassword" placeholder="Update your password" autocomplete="off" required>
+        <input type="submit" value="Update Password">
+    </form>
+<% } %>
+<%= user.email %>
