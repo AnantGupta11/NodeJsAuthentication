@@ -1,4 +1,4 @@
-const passport= require('passport-local');
+const passport= require('passport');
 const googleStrategy=require('passport-google-oauth').OAuth2Strategy;
 const crypto=require('crypto');
 const User=require('../models/user');
@@ -16,7 +16,7 @@ passport.use(new googleStrategy({
                 console.log("Error in google strategy passport",err);
                 return;
             }
-            console.log(profile);
+            // console.log(profile);
             //if found set the user as req.user
             if(user){
                 return done(null,user);
