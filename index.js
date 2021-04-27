@@ -2,6 +2,7 @@ const express=require('express');
 
 // install cookie parser and require it 
 const cookieParser=require('cookie-parser');
+const bodyParser = require('body-parser')
 const app=express();
 const port=3000;
 //import expressLayout
@@ -20,6 +21,8 @@ const customMware= require('./config/middleware');
 
 // reading through the post request
 app.use(express.urlencoded());
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json())
 
 
 //setting up cookieParser

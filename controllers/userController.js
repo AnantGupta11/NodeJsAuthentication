@@ -1,7 +1,7 @@
 const { response } = require('express');
 const { user } = require('../config/mongoose');
 const User=require('../models/user');
-const bcrypt =require('bcrypt');
+const crypto=require('crypto');
 
 //controller for sign In
 module.exports.signIn=function(req,res){
@@ -25,30 +25,42 @@ module.exports.signUp=function(req,res){
 
 //create user
 module.exports.create= async function(req,res){
-    // confirm password and password are not same
-    if(req.body.confirmpassword != req.body.password){
-        req.flash('success', 'Password and Confirm Password are Not Same');
-        return res.redirect('back');
-    }
-    // check the user is already present
-    let user= await User.findOne({email: req.body.email});        
-        //if user is not present the create the user
-        if(!user){
-            let newUser = new User();
-            newUser.name = req.body.name;
-            newUser.email = req.body.email;
-            newUser.password = req.body.password;
-            // newUser.setPassword(req.body.password);
-            
-            await newUser.save();               
-            return res.redirect('/users/signin');
-            
-            
-        }else{
-            //if user is find then redirect to sign in page
-
-            return res.redirect('/users/signin');
+    try{
+        // confirm password and password are not same
+        if(req.body.confirmpassword != req.body.password){
+            req.flash('error', 'Password and Confirm Password are Not Same');
+            return res.redirect('back');
         }
+
+        // check the user is already present
+         User.findOne({email: req.body.email},function(err,user){
+            if(err){
+                console.log('Error',err)
+               }
+               //if user is not present the create the user
+            if(!user){
+                let newUser = new User();
+                newUser.name = req.body.name;
+                newUser.email = req.body.email;
+                // newUser.password = req.body.password;
+                newUser.password=newUser.setPassword(req.body.password);
+                
+                 newUser.save();               
+                return res.redirect('/users/signin');
+                
+                
+            }else{
+                //if user is find then redirect to sign in page
+
+                return res.redirect('/users/signin');
+            }
+         });        
+            
+    }catch(err){
+        console.log('Error in creating User',err);
+        res.redirect('back');
+    }
+    
 }
 
     
@@ -84,9 +96,17 @@ module.exports.deleteSession=function(req,res){
 module.exports.updatePassword=async function(req,res){
     try{
         if(req.user.id==req.params.id){
-            let user=await User.findById(req.params.id);
-            user.password=req.body.password;
-            await user.save();
+            User.findById(req.params.id,function(err,user){
+                if(err){
+                    console.log('Error in Updating Password',err);
+                    return;
+                }
+                user.password=user.setPassword(req.body.password);
+                user.save();
+                return res.redirect('back');
+            });
+            
+            // user.save();
         }
     }catch(err){
         console.log('Error',err);
