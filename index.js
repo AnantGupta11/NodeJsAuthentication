@@ -4,9 +4,16 @@ const express=require('express');
 const cookieParser=require('cookie-parser');
 const app=express();
 const port=3000;
+//import expressLayout
+const expressLayouts=require('express-ejs-layouts');
 const db= require('./config/mongoose');
 
 const session=require('express-session');
+
+//use for session cookie
+const passport=require('passport');
+const passportLocal=require('./config/passport-local-strategy');
+const MongoStore=require('connect-mongo')(session);
 const flash=require('connect-flash');
 const customMware= require('./config/middleware');
 
@@ -17,9 +24,6 @@ app.use(express.urlencoded());
 //setting up cookieParser
 app.use(cookieParser());
 
-
-//import expressLayout
-const expressLayouts=require('express-ejs-layouts');
 
 app.use(express.static('./assets'));
 
@@ -35,9 +39,33 @@ app.set('layout extractScripts',true);
 app.set('view engine','ejs');
 app.set('views','./views');
 
+//MongoStore is use to store the session cookie in db
+app.use(session({
+    name: 'NodejsAuth',
+    //todo change the secret before deployment
+    secret:'ssshhhhh',
+    saveUninitialized:false,
+    resave:false,
+    cookie: {
+        maxAge: (1000*60*100)
+    },
+    store: new MongoStore({
+        mongooseConnection:db,
+        autoRemove:'disabled'
+    },function(err){
+        if(err){
+            console.lof(err || 'Connect-mongo is ok');
+        }
+    }
+    )
 
+}));
 
-app.use(session({secret:'ssssshhhhhh'}));
+// app.use(session({secret:'ssssshhhhhh'}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+// app.use(passport.setAuthenticatedUser);
 
 app.use(flash());
 
